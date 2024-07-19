@@ -4,7 +4,7 @@ export const ListCard: FC<
   PropsWithChildren<HTMLAttributes<HTMLDivElement>>
 > = ({ children, ...props }) => {
   return (
-    <div {...props} className={`${props.className} p-4 border-2 rounded-lg`}>
+    <div {...props} className={`${props.className} p-4 rounded-lg bg-white/5`}>
       {children}
     </div>
   );

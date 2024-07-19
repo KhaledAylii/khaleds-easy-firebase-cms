@@ -31,3 +31,7 @@ body {
     text-wrap: balance;
   }
 }
+
+hr {
+  border-color: #444;
+}

@@ -1,6 +1,6 @@
 import { db } from "@/helpers/firebase";
 
-export async function GET(
+export async function POST(
   req: Request,
   { params }: { params: { entryType: string; entryId: string } }
 ) {
@@ -16,10 +16,8 @@ export async function GET(
       },
       { status: 500 }
     );
-    await entryRef.on("value", (entrySnapshot) => {
-      if (entrySnapshot.exists()) {
-        res = Response.json({ data: entrySnapshot.val() }, { status: 200 });
-      }
+    await entryRef.remove(() => {
+      res = Response.json({}, { status: 200 });
     });
     return res;
   } catch (err) {
