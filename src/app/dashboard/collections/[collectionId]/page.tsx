@@ -1,6 +1,6 @@
 import { EditCollectionView } from "@/components/EditCollectionView";
 import { EditTypeView } from "@/components/EditTypeView";
-import { getEntry } from "@/helpers/api";
+import { getEntry, listEntries } from "@/helpers/api";
 import { Entry, EntryCollection, EntryType } from "@/helpers/types";
 
 export default async function Page({
@@ -13,6 +13,8 @@ export default async function Page({
     "collections",
     true
   );
+  const types = await listEntries<EntryType>("types", true);
+  if (!types) return null;
   if (!collections) return null;
-  return <EditCollectionView existingCollection={collections} />;
+  return <EditCollectionView existingCollection={collections} types={types} />;
 }

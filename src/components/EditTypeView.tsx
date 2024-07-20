@@ -22,6 +22,28 @@ const FieldCard: FC<{
   errors: { [key: string]: string };
   setEntryType: Dispatch<SetStateAction<EntryType>>;
 }> = ({ field, index, errors, setEntryType }) => {
+  const handleIdChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEntryType((prev) => {
+      const newFields = prev.fields;
+      const prevField = newFields[index];
+      newFields.splice(index, 1, {
+        ...prevField,
+        id: e.target.value.toLowerCase().replaceAll(" ", ""),
+      });
+      return { ...prev, fields: newFields };
+    });
+  };
+  const handleRequiredChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEntryType((prev) => {
+      const newFields = prev.fields;
+      const prevField = newFields[index];
+      newFields.splice(index, 1, {
+        ...prevField,
+        required: e.target.checked,
+      });
+      return { ...prev, fields: newFields };
+    });
+  };
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEntryType((prev) => {
       const newFields = prev.fields;
@@ -61,6 +83,22 @@ const FieldCard: FC<{
           {errors["name_empty"] as string}
         </Text>
       )}
+      <Text>Id</Text>
+      <Input
+        placeholder="entry id"
+        value={field.id}
+        onChange={handleIdChange}
+      />
+      {errors?.["id_empty"] && (
+        <Text className="text-sm" variant="error">
+          {errors["id_empty"] as string}
+        </Text>
+      )}
+      {errors?.["duplicate_id"] && (
+        <Text className="text-sm" variant="error">
+          {errors["duplicate_id"] as string}
+        </Text>
+      )}
       <Text>Type</Text>
       <Select onChange={handleTypeChange} value={field.type}>
         <option value={"text" as FieldType}>Text</option>
@@ -68,6 +106,12 @@ const FieldCard: FC<{
         <option value={"markdown" as FieldType}>Markdown</option>
         <option value={"image" as FieldType}>Image</option>
       </Select>
+      <Text>Required</Text>
+      <Input
+        type="checkbox"
+        value={field.required}
+        onChange={handleRequiredChange}
+      />
       <Button onClick={handleDeleteField}>Delete Field</Button>
     </ListCard>
   );
@@ -97,11 +141,27 @@ export const EditTypeView: FC<{ existingType?: EntryType }> = ({
       _errors["name_illegal_char"] =
         "the entry type name cannot include special characters or spaces except hyphens and underscores";
     }
+    const fieldIds: { [key: string]: number } = {};
     entryType.fields.forEach((field, index) => {
+      if (fieldIds[field.id]) {
+        _errors[`field-${index}`] = {
+          ...((_errors[`${field}-${index}`] as {}) ?? {}),
+          duplicate_id: "the field id is a duplicate",
+        };
+        fieldIds[field.id] = fieldIds[field.id] + 1;
+      } else {
+        fieldIds[field.id] = 1;
+      }
       if (!field.name) {
         _errors[`field-${index}`] = {
           ...((_errors[`${field}-${index}`] as {}) ?? {}),
           name_empty: "the field name cannot be empty",
+        };
+      }
+      if (!field.id) {
+        _errors[`field-${index}`] = {
+          ...((_errors[`${field}-${index}`] as {}) ?? {}),
+          id_empty: "the field id cannot be empty",
         };
       }
     });
@@ -130,7 +190,10 @@ export const EditTypeView: FC<{ existingType?: EntryType }> = ({
     setEntryType((prev) => {
       return {
         ...prev,
-        fields: [...prev.fields, { name: "", type: "text" } as EntryTypeField],
+        fields: [
+          ...prev.fields,
+          { name: "", type: "text", id: "", required: false } as EntryTypeField,
+        ],
       };
     });
   };

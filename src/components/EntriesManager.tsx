@@ -5,23 +5,24 @@ import { randomUUID } from "crypto";
 import { v4 as uuidv4 } from "uuid";
 import {
   FC,
+  MouseEvent,
   MouseEventHandler,
   PropsWithChildren,
   useEffect,
   useState,
 } from "react";
 import { ListCard } from "./ListCard";
-import { EntryType } from "@/helpers/types";
+import { CollectionEntry } from "@/helpers/types";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { invalidatePage } from "@/helpers/actions";
 
-const TypeCard: FC<{ type: EntryType }> = ({ type }) => {
+const EntryCard: FC<{ entry: CollectionEntry }> = ({ entry }) => {
   const pathname = usePathname();
   const router = useRouter();
   const handleDelete: MouseEventHandler<HTMLButtonElement> = async (e) => {
     e.preventDefault();
-    deleteEntry(type.id, "types")
+    deleteEntry(entry.id, `collections_entries_${entry.collectionId}`)
       .then(() => {
         return invalidatePage(pathname);
       })
@@ -29,11 +30,12 @@ const TypeCard: FC<{ type: EntryType }> = ({ type }) => {
         router.refresh();
       });
   };
+
   return (
-    <Link href={`${pathname}/${type.id}`}>
+    <Link href={`${pathname}/${entry.id}`}>
       <ListCard>
         <div className="flex flex-row justify-between items-center gap-2">
-          <span>{type?.name ? type.name : "Untitled Type"}</span>
+          <span>{entry?.name ? entry.name : entry.id}</span>
           <div className="flex flex-row gap-2">
             <Button onClick={handleDelete} variant="danger">
               Delete
@@ -46,20 +48,22 @@ const TypeCard: FC<{ type: EntryType }> = ({ type }) => {
   );
 };
 
-export const TypesManager: FC<{ types: { [key: string]: EntryType } }> = ({
-  types,
-}) => {
+export const EntriesManager: FC<{
+  entries: { [key: string]: CollectionEntry };
+}> = ({ entries }) => {
   const pathname = usePathname();
 
   return (
     <div className="flex flex-col gap-2">
-      {types &&
-        Object.entries(types)?.map(([typeId, typeData]) => {
-          return <TypeCard key={typeId} type={typeData} />;
+      {entries &&
+        Object.entries(entries)?.map(([entryId, entryData]) => {
+          return <EntryCard key={entryId} entry={entryData} />;
         })}
-      <Link href={`${pathname}/create`}>
-        <Button className="mt-4">Create Type</Button>
-      </Link>
+      <div className="flex flex-row gap-2">
+        <Link href={`${pathname}/create`}>
+          <Button className="mt-4">Create Entry</Button>
+        </Link>
+      </div>
     </div>
   );
 };

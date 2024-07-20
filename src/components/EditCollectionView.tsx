@@ -18,7 +18,7 @@ export const EditCollectionView: FC<{
     existingCollection ?? {
       id: "",
       name: "",
-      type: "",
+      type: (types && Object.values(types)[0]?.id) ?? "",
     }
   );
   const router = useRouter();

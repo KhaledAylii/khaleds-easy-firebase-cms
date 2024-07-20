@@ -9,7 +9,8 @@ export const getEntry = async <T = object>(
     const response = await fetch(
       isServer
         ? `${BASE_URL}/api/fb/entries/${entryType}/get/${entryId}`
-        : `/api/fb/entries/${entryType}/get/${entryId}`
+        : `/api/fb/entries/${entryType}/get/${entryId}`,
+      { cache: "no-store" }
     );
     const data = await response.json();
     const cleanedData = JSON.parse(data.data.content);
@@ -27,7 +28,8 @@ export const listEntries = async <T = object>(
     const response = await fetch(
       isServer
         ? `${BASE_URL}/api/fb/entries/${entryType}/list`
-        : `/api/fb/entries/${entryType}/list`
+        : `/api/fb/entries/${entryType}/list`,
+      { cache: "no-store" }
     );
     const data = await response.json();
     const cleanedData: { [key: string]: T } | null = {};

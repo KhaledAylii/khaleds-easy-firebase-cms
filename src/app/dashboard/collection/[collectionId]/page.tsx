@@ -1,18 +1,17 @@
-import { EditCollectionView } from "@/components/EditCollectionView";
-import { EditTypeView } from "@/components/EditTypeView";
-import { getEntry } from "@/helpers/api";
-import { Entry, EntryCollection, EntryType } from "@/helpers/types";
+import { CollectionsManager } from "@/components/CollectionsManager";
+import { EntriesManager } from "@/components/EntriesManager";
+import { listEntries } from "@/helpers/api";
+import { CollectionEntry } from "@/helpers/types";
 
 export default async function Page({
   params,
 }: {
   params: { collectionId: string };
 }) {
-  const collections = await getEntry<EntryCollection>(
-    params.collectionId,
-    "collections",
+  const entries = await listEntries<CollectionEntry>(
+    `collections_entries_${params.collectionId}`,
     true
   );
-  if (!collections) return null;
-  return <EditCollectionView existingCollection={collections} />;
+  if (!entries) return null;
+  return <EntriesManager entries={entries} />;
 }

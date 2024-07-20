@@ -1,14 +1,23 @@
 export type FieldType = "text" | "markdown" | "number" | "image";
 
 export interface EntryTypeField {
+  id: string;
   name: string;
   type: FieldType;
+  required: boolean;
 }
 
 export interface EntryType {
   id: string;
   name: string;
   fields: EntryTypeField[];
+}
+
+export interface CollectionEntry {
+  id: string;
+  name: string;
+  collectionId: string;
+  values: { [key: string]: { value: string; metadata: EntryTypeField } };
 }
 
 export interface EntryCollection {
